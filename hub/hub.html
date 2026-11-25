@@ -17,6 +17,12 @@
   select { padding: 5px 8px; font: inherit; border: 1px solid #bbb; border-radius: 6px; }
   .hint { color: #666; font-size: 12px; }
   #msg { margin-left: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; border-bottom: 1px solid #eee; padding: 6px 4px; vertical-align: top; }
+  td input.notes { width: 100%; min-width: 120px; padding: 3px 6px; font: inherit; border: 1px solid #ccc; border-radius: 6px; }
+  td .co { color: #666; font-size: 12px; }
+  button.del { border: none; background: none; color: #999; cursor: pointer; padding: 0 4px; }
+  @media (max-width: 640px) { th:nth-child(2), td:nth-child(2), th:nth-child(6), td:nth-child(6) { display: none; } }
 </style>
 </head>
 <body>
@@ -24,6 +30,12 @@
 <p class="lead">Open a job search page on one of these sites and click the toolbar button: the filter for that site starts, with its own panel and settings.</p>
 
 <div id="tools"></div>
+
+<h2 id="tracker">Job tracker</h2>
+<p class="hint">Every job the AI marks as a match is saved here. On Gmail, the "💼 Jobs" button (or the toolbar button) finds the record of the open email so you can update its status.</p>
+<p><input id="tq" placeholder="Search company, title, status…" style="width:100%;padding:6px 8px;font:inherit;border:1px solid #bbb;border-radius:6px"></p>
+<table id="records"><thead><tr><th>Job</th><th>Site</th><th>AI</th><th>Status</th><th>Notes</th><th>Updated</th><th></th></tr></thead><tbody></tbody></table>
+<p class="hint" id="tcount"></p>
 
 <h2>Copy AI settings and resume</h2>
 <p class="hint">Each site keeps its own settings. This copies the AI provider, models, API keys and resume from one site to all the others. Hard criteria, keywords and site options are not copied.</p>
@@ -34,6 +46,7 @@
 
 <script src="subs.js"></script>
 <script src="storage-ns.js"></script>
+<script src="tracker-store.js"></script>
 <script src="hub.js"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@
   async function openPage(path) {
     const url = real.runtime.getURL(path);
     try {
-      const [t] = await real.tabs.query({ url: url.split("?")[0] + "*" });
+      const [t] = await real.tabs.query({ url: url.split(/[?#]/)[0] + "*" });
       if (t) {
         await real.tabs.update(t.id, { active: true, url });
         await real.windows.update(t.windowId, { focused: true });
@@ -32,7 +32,16 @@
   globalThis.__jfOpenPage = openPage;
 
   // ---------- toolbar button ----------
+  const MAIL_RE = /^https:\/\/mail\.google\.com\//;
   function handleClick(tab) {
+    if (MAIL_RE.test((tab && tab.url) || "")) {
+      // Gmail: show/hide the job tracker menu (hub/mail.js); inject it if the tab was open before install
+      real.tabs.sendMessage(tab.id, { type: "HUB_TRACKER_TOGGLE" }).catch(async () => {
+        await real.scripting.executeScript({ target: { tabId: tab.id }, files: ["hub/tracker-store.js", "hub/mail.js"] });
+        await real.tabs.sendMessage(tab.id, { type: "HUB_TRACKER_TOGGLE" });
+      }).catch((e) => console.error("[tracker]", e));
+      return;
+    }
     const sub = subForUrl(tab && tab.url);
     if (!sub || !sub.clicks.length) {
       openPage(HUB_PAGE);
@@ -48,6 +57,11 @@
     }
   }
   real.action.onClicked.addListener(handleClick);
+
+  // ---------- hub messages (from hub/mail.js) ----------
+  real.runtime.onMessage.addListener((msg) => {
+    if (msg && msg.type === "HUB_OPEN_TRACKER") openPage(HUB_PAGE + "#tracker");
+  });
   globalThis.__jfHandleClick = handleClick; // for tests
 
   // ---------- per-sub chrome object ----------
@@ -76,7 +90,19 @@
         if (messageWrappers.has(fn)) return;
         const w = (msg, sender, sendResponse) => {
           if (!msg || typeof msg.type !== "string" || !msg.type.startsWith(sub.prefix)) return undefined;
-          return fn(msg, sender, sendResponse);
+          let respond = sendResponse;
+          // A job the AI calls a match goes into the job tracker (not the options page's "Test")
+          if (msg.type === sub.prefix + "SCORE" && msg.job && sender && sender.tab && !/^chrome-extension:/.test(sender.url || "")) {
+            respond = (resp) => {
+              try {
+                if (resp && resp.ok && resp.result && resp.result.decision === "match") globalThis.JFTracker.recordMatch(sub, msg.job, resp.result, sender);
+              } catch (e) {
+                console.error("[tracker]", e);
+              }
+              return sendResponse(resp);
+            };
+          }
+          return fn(msg, sender, respond);
         };
         messageWrappers.set(fn, w);
         real.runtime.onMessage.addListener(w);

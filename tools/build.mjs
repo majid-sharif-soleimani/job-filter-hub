@@ -41,7 +41,7 @@ const manifest = {
   content_scripts: []
 };
 
-const swImports = ["hub/subs.js", "hub/storage-ns.js", "hub/router.js"];
+const swImports = ["hub/subs.js", "hub/storage-ns.js", "hub/tracker-store.js", "hub/router.js"];
 
 for (const sub of SUBS) {
   const dir = `extensions/${sub.id}`;
@@ -97,6 +97,10 @@ for (const sub of SUBS) {
     manifest.content_scripts.push(entry);
   }
 }
+
+// Job tracker menu on Gmail (hub/mail.js)
+manifest.host_permissions.push("https://mail.google.com/*");
+manifest.content_scripts.push({ matches: ["https://mail.google.com/*"], js: ["hub/tracker-store.js", "hub/mail.js"], run_at: "document_idle" });
 
 manifest.permissions = uniq(manifest.permissions);
 manifest.host_permissions = uniq(manifest.host_permissions);
