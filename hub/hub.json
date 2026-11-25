@@ -1,0 +1,6 @@
+{
+  "name": "Job Filter Hub (AI)",
+  "version": "1.0.0",
+  "description": "One extension for LinkedIn, Indeed, consultant.dev and Platsbanken: runs the matching AI job filter on each site.",
+  "actionTitle": "Job Filter Hub: click to filter jobs on this page (LinkedIn, Indeed, consultant.dev, Platsbanken)"
+}

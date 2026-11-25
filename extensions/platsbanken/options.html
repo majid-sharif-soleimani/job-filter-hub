@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Platsbanken AI Job Filter – Settings</title>
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; color: #222; }
+  h1 { font-size: 20px; }
+  label { display: block; font-weight: 600; margin-top: 16px; }
+  .hint { font-weight: 400; color: #666; font-size: 12px; }
+  input[type=text], input[type=password], input[type=number], select, textarea { width: 100%; box-sizing: border-box; padding: 6px 8px; font: inherit; border: 1px solid #bbb; border-radius: 6px; }
+  textarea { min-height: 140px; font-family: ui-monospace, monospace; font-size: 12px; }
+  #resume { min-height: 260px; }
+  .row { display: flex; gap: 16px; } .row > div { flex: 1; }
+  button { margin-top: 20px; padding: 8px 16px; font: inherit; border-radius: 6px; border: 1px solid #005c45; background: #005c45; color: #fff; cursor: pointer; }
+  button.secondary { background: #fff; color: #005c45; }
+  #msg { margin-left: 12px; }
+</style>
+</head>
+<body>
+<h1>Platsbanken AI Job Filter – Settings</h1>
+
+<div class="row">
+  <div>
+    <label>AI provider
+      <select id="provider">
+        <option value="anthropic">Claude (Anthropic)</option>
+        <option value="openai">OpenAI</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="typesafe">TypeSafe Jev (TypeSafe, OpenRouter or Vercel AI Gateway key)</option>
+      </select>
+    </label>
+  </div>
+  <div>
+    <label>Model <span class="hint">(any model name your key can use)</span>
+      <input type="text" id="model">
+    </label>
+  </div>
+</div>
+
+<label>API key for the selected provider <span class="hint">(stored only in this browser)</span>
+  <input type="password" id="apiKey" autocomplete="off">
+</label>
+
+<div class="row">
+  <div>
+    <label>Minimum score to keep an ad (0–100)
+      <input type="number" id="threshold" min="0" max="100">
+    </label>
+  </div>
+  <div>
+    <label>Pause between ads (seconds)
+      <input type="number" id="delaySec" min="0" max="30" step="0.5">
+    </label>
+  </div>
+</div>
+
+<div class="row">
+  <div>
+    <label>How to open each ad
+      <select id="openMode">
+        <option value="iframe">Hidden frame inside the page (fast, invisible)</option>
+        <option value="tab">Background tab (opened and closed again)</option>
+      </select>
+    </label>
+  </div>
+  <div>
+    <label>Ads that don't fit
+      <select id="markRejected">
+        <option value="dim">Dim them (faded, with a red badge)</option>
+        <option value="hide">Hide them from the list</option>
+        <option value="none">Badge only</option>
+      </select>
+    </label>
+  </div>
+</div>
+
+<label><input type="checkbox" id="saveMatches"> Save matching ads <span class="hint">(press Platsbanken's heart "Spara annons" on ads that pass; already-saved ads are left alone and skipped in later runs)</span></label>
+
+<label><input type="checkbox" id="showPrevious"> Show earlier results automatically <span class="hint">(badges from earlier runs appear as soon as a results page opens, no AI call)</span></label>
+
+<label><input type="checkbox" id="includeExternal"> Also check the "Externa webbplatser" tab <span class="hint">(with "Auto next page" ticked: after the last Platsbanken page, the run switches to the Externa webbplatser tab and checks those ads too. You can also open that tab and click the icon to check only external ads)</span></label>
+
+<label><input type="checkbox" id="readExternalSource"> Read the full ad on the external site <span class="hint">(Platsbanken shows external ads only as a ~300 character summary. With this on, the extension opens the source page (ledigajobb.se, a company site, …) in the background and gives the AI the full text. Chrome asks once for permission to read other sites; without it only the summary is scored)</span></label>
+
+<label><input type="checkbox" id="dryRun"> Dry run <span class="hint">(score and badge the ads, but don't dim/hide and don't save anything)</span></label>
+
+<label>Auto-reject keywords <span class="hint">(comma separated, case-insensitive, searched in title, company, location and occupation; a match rejects the ad without asking the AI. Spaces are kept and matter: <code>Java</code> also matches "JavaScript", <code> Java </code> matches only the word Java. Note that a space after a comma becomes part of the next keyword)</span>
+  <textarea id="blockKeywords" style="min-height:60px" placeholder="Junior,Praktik,Trainee,Embedded"></textarea>
+</label>
+
+<label>Commutable locations <span class="hint">(comma separated; an ad located anywhere else is rejected unless it is remote (distans) — no AI call. Leave empty to disable)</span>
+  <textarea id="commuteLocations" style="min-height:60px" placeholder="e.g. Stockholm, Solna, Sundbyberg, Kista"></textarea>
+</label>
+
+<label>Hard criteria <span class="hint">(an ad that clearly breaks one of these is rejected; ads are often in Swedish, write the rules in any language)</span>
+  <textarea id="criteria" placeholder="HARD RULES (a job that clearly breaks any of these must be rejected):
+- Target roles: backend developer, mid or senior level; tech lead is fine.
+- Reject: junior, intern, trainee and non-engineering roles.
+- Location: &lt;your city&gt; or commutable places; elsewhere only if fully remote.
+- Language: fluent Swedish must NOT be required ("meriterande" is fine).
+
+TECHNOLOGY (not a hard rule):
+- &lt;your stack&gt; is the best fit, but only explicitly required technologies are real gaps.
+
+SCORING: 75+ Strong · 55–74 Transition · 40–54 Weak · below 40 Gap
+REASON: start with [Strong], [Transition], [Weak] or [Gap].
+
+See the guide in settings.js for a full example."></textarea>
+</label>
+
+<label>Resume <span class="hint">(paste plain text, or load a .txt / .md file)</span>
+  <input type="file" id="resumeFile" accept=".txt,.md,text/plain">
+  <textarea id="resume" placeholder="Paste your resume here…"></textarea>
+</label>
+
+<button id="save">Save</button>
+<button id="test" class="secondary">Save &amp; test API</button>
+<span id="msg"></span>
+<div id="permState" class="hint" style="color:#b06000;margin-top:8px"></div>
+
+<script src="settings.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

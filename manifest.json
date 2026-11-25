@@ -1,0 +1,104 @@
+{
+  "manifest_version": 3,
+  "name": "Job Filter Hub (AI)",
+  "version": "1.0.0",
+  "description": "One extension for LinkedIn, Indeed, consultant.dev and Platsbanken: runs the matching AI job filter on each site.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Job Filter Hub: click to filter jobs on this page (LinkedIn, Indeed, consultant.dev, Platsbanken)",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "hub/hub.html",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "https://api.anthropic.com/*",
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.typesafe.ai/*",
+    "https://openrouter.ai/*",
+    "https://ai-gateway.vercel.sh/*",
+    "https://*.indeed.com/*",
+    "https://consultant.dev/*",
+    "https://www.consultant.dev/*",
+    "https://arbetsformedlingen.se/*",
+    "https://www.arbetsformedlingen.se/*",
+    "https://platsbanken-api.arbetsformedlingen.se/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/*"
+      ],
+      "js": [
+        "hub/storage-ns.js",
+        "hub/page-shim.js",
+        "generated/linkedin/ns.js",
+        "extensions/linkedin/content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true,
+      "match_origin_as_fallback": true
+    },
+    {
+      "matches": [
+        "https://*.indeed.com/*"
+      ],
+      "js": [
+        "hub/storage-ns.js",
+        "hub/page-shim.js",
+        "generated/indeed/ns.js",
+        "extensions/indeed/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://consultant.dev/*",
+        "https://www.consultant.dev/*"
+      ],
+      "js": [
+        "hub/storage-ns.js",
+        "hub/page-shim.js",
+        "generated/consultant/ns.js",
+        "extensions/consultant/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://arbetsformedlingen.se/platsbanken/*",
+        "https://www.arbetsformedlingen.se/platsbanken/*"
+      ],
+      "js": [
+        "hub/storage-ns.js",
+        "hub/page-shim.js",
+        "generated/platsbanken/ns.js",
+        "extensions/platsbanken/extract.js",
+        "extensions/platsbanken/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
