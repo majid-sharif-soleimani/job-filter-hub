@@ -20,6 +20,13 @@ The files in `extensions/<id>/` are exact copies of the originals and are never 
 
 Settings from the old standalone extensions can't be carried over automatically (Chrome keeps each extension's storage separate), so they have to be entered once here.
 
+## Job tracker and the Gmail menu
+
+- Every job that a filter's AI marks as a **match** is saved as a record (title, company, site, AI score, page link) with the status **Matched**. If the same job is scored again, its status and notes are kept.
+- On **Gmail**, a **💼 Jobs** button at the bottom right (or the toolbar button) opens a menu. It reads the open email (subject, sender, text), finds the matching records by company name, sender domain and job title, and lets you change the status (Matched, Applied, Interview, Offer, Rejected, Withdrawn) and notes. If nothing matches, you can search all records or add the email as a new record.
+- The hub page (toolbar button on any other site, or the extension's options) lists all records with search, status, notes and delete.
+- Everything stays in the browser (`chrome.storage.local`, key `hub::applications`). The email is only read on the page and is never sent anywhere.
+
 ## How it works
 
 - **Toolbar button**: the click goes to the filter of the site in the active tab. On any other page it opens the hub page.

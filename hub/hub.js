@@ -68,3 +68,43 @@ document.getElementById("copy").onclick = async () => {
 };
 
 render();
+
+// ---------- job tracker ----------
+async function renderTracker() {
+  const all = await JFTracker.all();
+  const list = JFTracker.search(all, document.getElementById("tq").value);
+  const body = document.querySelector("#records tbody");
+  body.textContent = "";
+  for (const r of list.slice(0, 500)) {
+    const tr = document.createElement("tr");
+    const job = document.createElement("td");
+    const t = r.url ? Object.assign(document.createElement("a"), { href: r.url, target: "_blank", textContent: r.title }) : document.createTextNode(r.title);
+    const co = Object.assign(document.createElement("div"), { className: "co", textContent: r.company || "" });
+    job.append(t, co);
+    const site = Object.assign(document.createElement("td"), { textContent: r.siteName || r.site || "" });
+    const ai = Object.assign(document.createElement("td"), { textContent: r.score != null ? r.score : "", title: r.reason || "" });
+    const st = document.createElement("td");
+    const sel = document.createElement("select");
+    for (const s of JFTracker.STATUSES) sel.append(Object.assign(document.createElement("option"), { value: s, textContent: s }));
+    sel.value = r.status || "Matched";
+    sel.onchange = () => JFTracker.update(r.id, { status: sel.value }).then(renderTracker);
+    st.append(sel);
+    const nt = document.createElement("td");
+    const notes = Object.assign(document.createElement("input"), { className: "notes", value: r.notes || "" });
+    notes.onchange = () => JFTracker.update(r.id, { notes: notes.value });
+    nt.append(notes);
+    const up = Object.assign(document.createElement("td"), { textContent: new Date(r.updatedAt || r.createdAt || 0).toLocaleDateString() });
+    const dt = document.createElement("td");
+    const del = Object.assign(document.createElement("button"), { className: "del", textContent: "✕", title: "Delete this record" });
+    del.onclick = () => confirm(`Delete "${r.title}"?`) && JFTracker.remove(r.id).then(renderTracker);
+    dt.append(del);
+    tr.append(job, site, ai, st, nt, up, dt);
+    body.append(tr);
+  }
+  document.getElementById("tcount").textContent = `${list.length} of ${all.length} record(s)` + (list.length > 500 ? " (first 500 shown)" : "");
+}
+document.getElementById("tq").addEventListener("input", renderTracker);
+chrome.storage.onChanged.addListener((ch, area) => {
+  if (area === "local" && ch[JFTracker.KEY] && document.activeElement?.className !== "notes") renderTracker();
+});
+renderTracker();

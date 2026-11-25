@@ -2,6 +2,7 @@
 importScripts(
   "hub/subs.js",
   "hub/storage-ns.js",
+  "hub/tracker-store.js",
   "hub/router.js",
   "generated/linkedin/background.js",
   "generated/indeed/background.js",
