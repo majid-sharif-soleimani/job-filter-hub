@@ -1,15 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Job Filter Hub (AI)",
-  "version": "1.0.0",
-  "description": "One extension for LinkedIn, Indeed, consultant.dev and Platsbanken: runs the matching AI job filter on each site.",
+  "version": "1.1.0",
+  "description": "One extension for LinkedIn, Indeed, consultant.dev, Platsbanken and Jobbsafari: runs the matching AI job filter on each site.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Job Filter Hub: click to filter jobs on this page (LinkedIn, Indeed, consultant.dev, Platsbanken)",
+    "default_title": "Job Filter Hub: click to filter jobs on this page (LinkedIn, Indeed, consultant.dev, Platsbanken, Jobbsafari)",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -39,7 +39,9 @@
     "https://www.consultant.dev/*",
     "https://arbetsformedlingen.se/*",
     "https://www.arbetsformedlingen.se/*",
-    "https://platsbanken-api.arbetsformedlingen.se/*"
+    "https://platsbanken-api.arbetsformedlingen.se/*",
+    "https://jobbsafari.se/*",
+    "https://www.jobbsafari.se/*"
   ],
   "optional_host_permissions": [
     "https://*/*",
@@ -97,6 +99,19 @@
         "generated/platsbanken/ns.js",
         "extensions/platsbanken/extract.js",
         "extensions/platsbanken/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://jobbsafari.se/*",
+        "https://www.jobbsafari.se/*"
+      ],
+      "js": [
+        "hub/storage-ns.js",
+        "hub/page-shim.js",
+        "generated/jobbsafari/ns.js",
+        "extensions/jobbsafari/content.js"
       ],
       "run_at": "document_idle"
     }
