@@ -6,5 +6,6 @@ importScripts(
   "generated/linkedin/background.js",
   "generated/indeed/background.js",
   "generated/consultant/background.js",
-  "generated/platsbanken/background.js"
+  "generated/platsbanken/background.js",
+  "generated/jobbsafari/background.js"
 );

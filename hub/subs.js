@@ -30,6 +30,13 @@ var JF_SUBS = [
     prefix: "AFJF_",
     site: "https://arbetsformedlingen.se/platsbanken/annonser",
     match: "^https://(www\\.)?arbetsformedlingen\\.se/"
+  },
+  {
+    id: "jobbsafari",
+    name: "Jobbsafari",
+    prefix: "JSJF_",
+    site: "https://jobbsafari.se/lediga-jobb",
+    match: "^https://(www\\.)?jobbsafari\\.se/"
   }
 ];
 

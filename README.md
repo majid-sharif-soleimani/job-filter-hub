@@ -1,6 +1,6 @@
 # Job Filter Hub (AI)
 
-One Chrome extension that bundles four AI job filters. It is only an entry point: on each site it runs that site's own filter, with the same panel, settings page and behaviour as the standalone extension.
+One Chrome extension that bundles five AI job filters. It is only an entry point: on each site it runs that site's own filter, with the same panel, settings page and behaviour as the standalone extension.
 
 | Site | Bundled extension | Source |
 |---|---|---|
@@ -8,23 +8,24 @@ One Chrome extension that bundles four AI job filters. It is only an entry point
 | Indeed | `extensions/indeed/` (Indeed Job Filter 1.5.3) | [indeed-job-filter](https://github.com/majid-sharif-soleimani/indeed-job-filter) @ `2c77720` |
 | consultant.dev | `extensions/consultant/` (Consultant.dev Job Filter 1.0.0) | consultant-job-filter.zip |
 | Platsbanken | `extensions/platsbanken/` (Platsbanken Job Filter 1.1.0) | platsbanken-job-filter.zip |
+| Jobbsafari | `extensions/jobbsafari/` (Jobbsafari Job Filter 1.0.0) | written for this hub, from consultant-job-filter (also works standalone) |
 
-The files in `extensions/<id>/` are exact copies of the originals and are never edited.
+The files in `extensions/<id>/` are exact copies of the originals and are never edited (Jobbsafari has no separate original; it is maintained here).
 
 ## Install
 
-1. Uninstall (or turn off) the four standalone extensions, otherwise each site gets two panels.
+1. Uninstall (or turn off) the standalone extensions, otherwise each site gets two panels.
 2. Open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and pick this folder.
-3. Click the toolbar button anywhere outside the four sites (or open the extension's options) to get the hub page. Open **Settings** for a site, enter the API key and resume, then use **Copy AI settings and resume** to fill in the other sites.
+3. Click the toolbar button anywhere outside the supported sites (or open the extension's options) to get the hub page. Open **Settings** for a site, enter the API key and resume, then use **Copy AI settings and resume** to fill in the other sites.
 
 Settings from the old standalone extensions can't be carried over automatically (Chrome keeps each extension's storage separate), so they have to be entered once here.
 
 ## How it works
 
 - **Toolbar button**: the click goes to the filter of the site in the active tab. On any other page it opens the hub page.
-- **Background**: Chrome allows one service worker per extension, so `background.js` loads a small router (`hub/router.js`) and each site's original `background.js` inside its own function scope (`generated/<id>/background.js`). Each one gets its own `chrome` object that only differs in: toolbar clicks (only for its site), messages (only its own `LJF_` / `IJF_` / `CJF_` / `AFJF_` types), `openOptionsPage()` (its own settings page), injected file paths, and storage.
-- **Storage**: all four use the same key names (`settings`, `scoreCache`, ...). Each site's data is stored under its own prefix (`linkedin::settings`, ...) by `hub/storage-ns.js` and `hub/page-shim.js`, which run before the original content scripts and settings pages.
-- **Manifest**: merged from the four manifests (permissions, host permissions, content scripts per site).
+- **Background**: Chrome allows one service worker per extension, so `background.js` loads a small router (`hub/router.js`) and each site's original `background.js` inside its own function scope (`generated/<id>/background.js`). Each one gets its own `chrome` object that only differs in: toolbar clicks (only for its site), messages (only its own `LJF_` / `IJF_` / `CJF_` / `AFJF_` / `JSJF_` types), `openOptionsPage()` (its own settings page), injected file paths, and storage.
+- **Storage**: all of them use the same key names (`settings`, `scoreCache`, ...). Each site's data is stored under its own prefix (`linkedin::settings`, ...) by `hub/storage-ns.js` and `hub/page-shim.js`, which run before the original content scripts and settings pages.
+- **Manifest**: merged from the sub-extensions' manifests (permissions, host permissions, content scripts per site).
 
 ## Updating a bundled extension
 
